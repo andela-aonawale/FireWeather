@@ -10,14 +10,12 @@ import Foundation
 
 class Weather {
     var weather: String
-    var temperature: String
-    var speed: Float
-    var rain: Float
+    var dayTemperature: String
+    var nightTemperature: String
     
-    init(weather: String, temperature: String, speed: Float, description: String, rain: Float){
+    init(weather: String, dayTemperature: String, nightTemperature: String){
         self.weather = weather
-        self.temperature = temperature
-        self.speed = speed
-        self.rain = rain
+        self.dayTemperature = dayTemperature
+        self.nightTemperature = nightTemperature
     }
 }
