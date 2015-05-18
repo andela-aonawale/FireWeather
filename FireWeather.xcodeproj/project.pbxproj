@@ -18,6 +18,12 @@
 		85BB65FA1B0393BC00A912F7 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85BB65DF1B03932900A912F7 /* Alamofire.framework */; };
 		85BB65FB1B0393BC00A912F7 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85BB65DF1B03932900A912F7 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85BB66031B03A43800A912F7 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BB66021B03A43800A912F7 /* Weather.swift */; };
+		85D523231B095F4B00ADC907 /* Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D523221B095F4B00ADC907 /* Firebase.framework */; };
+		85D523251B0964D300ADC907 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D523241B0964D300ADC907 /* libicucore.dylib */; };
+		85D523271B0964E600ADC907 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D523261B0964E600ADC907 /* libc++.dylib */; };
+		85D523291B0964F200ADC907 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D523281B0964F200ADC907 /* CFNetwork.framework */; };
+		85D5232B1B0964FA00ADC907 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D5232A1B0964FA00ADC907 /* Security.framework */; };
+		85D5232D1B09650600ADC907 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85D5232C1B09650600ADC907 /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,6 +135,13 @@
 		85BB65D71B03932800A912F7 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "Alamofire-master/Alamofire.xcodeproj"; sourceTree = "<group>"; };
 		85BB65E61B03933900A912F7 /* SwiftyJSON.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftyJSON.xcodeproj; path = "SwiftyJSON-master/SwiftyJSON-master/SwiftyJSON.xcodeproj"; sourceTree = "<group>"; };
 		85BB66021B03A43800A912F7 /* Weather.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
+		85D523221B095F4B00ADC907 /* Firebase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Firebase.framework; path = "../../../Downloads/Firebase.framework-2.2.2/Firebase.framework"; sourceTree = "<group>"; };
+		85D523241B0964D300ADC907 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		85D523261B0964E600ADC907 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		85D523281B0964F200ADC907 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		85D5232A1B0964FA00ADC907 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		85D5232C1B09650600ADC907 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		85D5232E1B09677C00ADC907 /* FireWeather-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FireWeather-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +149,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85D5232D1B09650600ADC907 /* SystemConfiguration.framework in Frameworks */,
+				85D5232B1B0964FA00ADC907 /* Security.framework in Frameworks */,
+				85D523291B0964F200ADC907 /* CFNetwork.framework in Frameworks */,
+				85D523271B0964E600ADC907 /* libc++.dylib in Frameworks */,
+				85D523251B0964D300ADC907 /* libicucore.dylib in Frameworks */,
 				85BB65F51B0393B700A912F7 /* SwiftyJSON.framework in Frameworks */,
+				85D523231B095F4B00ADC907 /* Firebase.framework in Frameworks */,
 				85BB65FA1B0393BC00A912F7 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -154,6 +173,12 @@
 		85BB65A71B03683400A912F7 = {
 			isa = PBXGroup;
 			children = (
+				85D5232C1B09650600ADC907 /* SystemConfiguration.framework */,
+				85D5232A1B0964FA00ADC907 /* Security.framework */,
+				85D523281B0964F200ADC907 /* CFNetwork.framework */,
+				85D523261B0964E600ADC907 /* libc++.dylib */,
+				85D523241B0964D300ADC907 /* libicucore.dylib */,
+				85D523221B095F4B00ADC907 /* Firebase.framework */,
 				85BB65E61B03933900A912F7 /* SwiftyJSON.xcodeproj */,
 				85BB65D71B03932800A912F7 /* Alamofire.xcodeproj */,
 				85BB65B21B03683500A912F7 /* FireWeather */,
@@ -181,6 +206,7 @@
 				85BB65B31B03683500A912F7 /* Supporting Files */,
 				85BB66021B03A43800A912F7 /* Weather.swift */,
 				857571E91B03CD8900B6AC38 /* WeatherViewController.swift */,
+				85D5232E1B09677C00ADC907 /* FireWeather-Bridging-Header.h */,
 			);
 			path = FireWeather;
 			sourceTree = "<group>";
@@ -543,10 +569,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/ahmedOnawale/Downloads/Firebase.framework-2.2.2",
+				);
 				INFOPLIST_FILE = FireWeather/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "FireWeather/FireWeather-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -554,10 +588,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/ahmedOnawale/Downloads/Firebase.framework-2.2.2",
+				);
 				INFOPLIST_FILE = FireWeather/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "FireWeather/FireWeather-Bridging-Header.h";
 			};
 			name = Release;
 		};

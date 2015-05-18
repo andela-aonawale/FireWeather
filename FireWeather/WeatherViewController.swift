@@ -12,6 +12,8 @@ import SwiftyJSON
 
 class WeatherViewController: UIViewController {
     
+    var rootRef = Firebase(url:"https://fireweather.firebaseio.com/")
+    
     @IBOutlet weak var weatherType: UILabel!
     @IBOutlet weak var temperature: UILabel!
     @IBOutlet weak var weatherImage: UIImageView!
@@ -24,6 +26,12 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         getWeatherForcast()
+        
+        // Read data and react to changes
+        rootRef.observeEventType(.Value, withBlock: {
+            snapshot in
+            println("\(snapshot.key) -> \(snapshot.value)")
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,7 +43,7 @@ class WeatherViewController: UIViewController {
         request(.GET, "http://api.openweathermap.org/data/2.5/weather?q=Lagos,ng&units=metric")
         .responseJSON { (request, response, data, error) in
             let json = JSON(data!)
-            println(json)
+            //println(json)
             self.weatherType.text = json["weather", 0, "description"].stringValue
             var temp = json["main", "temp"].double
             self.temperature.text = String(Int(round(temp!))) + "\u{00B0}"
