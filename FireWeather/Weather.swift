@@ -9,13 +9,15 @@
 import Foundation
 
 class Weather {
-    var weather: String
-    var dayTemperature: String
-    var nightTemperature: String
+    var weatherImage:String = ""
+    var day:String = ""
+    var minTemperature:String = ""
+    var maxTemperature:String = ""
     
-    init(weather: String, dayTemperature: String, nightTemperature: String){
-        self.weather = weather
-        self.dayTemperature = dayTemperature
-        self.nightTemperature = nightTemperature
+    init(weatherImage: String, day: String, minTemperature: String, maxTemperature: String){
+        self.weatherImage = weatherImage
+        self.day = day
+        self.minTemperature = minTemperature
+        self.maxTemperature = maxTemperature
     }
 }
