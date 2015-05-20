@@ -7,7 +7,7 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
-        <!--Lagos-->
+        <!--Weather View Controller-->
         <scene sceneID="TGV-ui-fDG">
             <objects>
                 <viewController id="Mzm-6L-vY5" customClass="WeatherViewController" customModule="FireWeather" customModuleProvider="target" sceneMemberID="viewController">
@@ -178,8 +178,20 @@
                             <constraint firstAttribute="trailingMargin" secondItem="t4I-d7-isI" secondAttribute="trailing" constant="-16" id="ouh-7e-rcc"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Lagos" id="wPH-lP-W3H">
+                    <navigationItem key="navigationItem" id="wPH-lP-W3H">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" image="settings" id="gti-Q7-Oyv"/>
+                        <button key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="OVb-oc-uEw">
+                            <rect key="frame" x="58" y="7" width="491" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="17"/>
+                            <state key="normal" title="Calabar">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="showCities" destination="Mzm-6L-vY5" eventType="touchUpInside" id="8q9-Yi-cnI"/>
+                            </connections>
+                        </button>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="gAX-or-kUT">
                             <connections>
                                 <action selector="refreshWeatherForcast:" destination="Mzm-6L-vY5" id="VLl-Pe-sCr"/>
@@ -187,6 +199,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="changeSelectedCity" destination="OVb-oc-uEw" id="hLA-mk-Dnq"/>
                         <outlet property="containerView" destination="jcJ-pB-DrG" id="C4c-Jx-7b9"/>
                         <outlet property="firstView" destination="t4I-d7-isI" id="SMR-Ab-xGJ"/>
                         <outlet property="humidity" destination="9Rh-JL-RMu" id="TQr-4W-u6q"/>
@@ -205,7 +218,6 @@
         <!--Navigation Controller-->
         <scene sceneID="QYP-ac-0rN">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="t16-2x-XGT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Crx-2X-Gcw" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="OPv-U2-B4A">
@@ -217,6 +229,7 @@
                         <segue destination="Mzm-6L-vY5" kind="relationship" relationship="rootViewController" id="dFQ-Re-j1Y"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t16-2x-XGT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2411" y="422"/>
         </scene>

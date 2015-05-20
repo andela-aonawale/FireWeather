@@ -10,13 +10,18 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class WeatherViewController: UIViewController {
+class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var rootRef = Firebase(url:"https://fireweather.firebaseio.com/")
-
+    
     @IBOutlet weak var firstView: UIView!
     @IBOutlet weak var containerView: UIView!
+    var dropDownView: UITableView!
     var weatherArray = [Weather]()
+    var cities: NSDictionary!
+    var selectedCity: String = "calabar,ng"
+  
+    @IBOutlet weak var changeSelectedCity: UIButton!
     
     @IBOutlet weak var weatherType: UILabel!
     @IBOutlet weak var temperature: UILabel!
@@ -30,34 +35,52 @@ class WeatherViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         refreshWeatherForcast(self)
+        createDropDown()
+        dropDownView.hidden = !toggleDropDownView()
     }
+    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true)
         // Read data and react to changes
+        forecast()
+    }
+    
+    @IBAction func refreshWeatherForcast(sender: AnyObject) {
+        request(.GET, "http://fire-weather.herokuapp.com/api/v1/")
+        .responseJSON{(request, response, data, error) in
+            println(data)
+        }
+    }
+    
+    func forecast() {
         rootRef.observeEventType(.Value, withBlock: {
             snapshot in
+            self.cities = snapshot.value!["cities"] as! NSDictionary
+            self.dropDownView.reloadData()
+            
             if let json = JSON(snapshot.value!) as JSON?{
-                
-                self.title = json["cities", "lagos,ng", "dailyForcast", "name"].stringValue
-                self.weatherType.text = json["cities", "lagos,ng", "dailyForcast", "weather", 0, "description"].stringValue
-                var temp = json["cities", "lagos,ng", "dailyForcast", "main", "temp"].double
+                self.title = json["cities", self.selectedCity, "dailyForcast", "name"].stringValue
+                self.weatherType.text = json["cities", self.selectedCity, "dailyForcast", "weather", 0, "description"].stringValue
+                var temp = json["cities", self.selectedCity, "dailyForcast", "main", "temp"].double
                 self.temperature.text = String(Int(round(temp!))) + "\u{00B0}"
-                self.weatherImage.image = UIImage(named: json["cities", "lagos,ng", "dailyForcast", "weather", 0, "main"].stringValue)
-                self.humidity.text = json["cities", "lagos,ng", "dailyForcast", "main", "humidity"].stringValue + "%"
-                if let rain = json["cities", "lagos,ng", "dailyForcast", "rain", "3h"].stringValue as String?{
-                    self.rainfall.text = rain + "mm"
+                self.weatherImage.image = UIImage(named: json["cities", self.selectedCity, "dailyForcast", "weather", 0, "main"].stringValue)
+                self.humidity.text = json["cities", self.selectedCity, "dailyForcast", "main", "humidity"].stringValue + "%"
+                if let rain = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue as String?{
+                    self.rainfall.text = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue + "mm"
                 } else {
                     self.rainfall.text = "0mm"
                 }
-                self.windSpeed.text = json["cities", "lagos,ng", "dailyForcast", "wind", "speed"].stringValue + "mph"
-                self.setBackgroundColor(self.firstView, temperature: String(Int(round(json["cities", "lagos,ng", "dailyForcast", "main", "temp_min"].double!))))
+                self.windSpeed.text = json["cities", self.selectedCity, "dailyForcast", "wind", "speed"].stringValue + "mph"
+                self.setBackgroundColor(self.firstView, temperature: String(Int(round(json["cities", self.selectedCity, "dailyForcast", "main", "temp_min"].double!))))
                 self.navigationController?.navigationBar.barTintColor = self.firstView.backgroundColor
                 self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
                 self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.whiteColor()]
                 
-                var jsonArray = json["cities", "lagos,ng", "5DaysForcast"] as JSON
+                var jsonArray = json["cities", self.selectedCity, "5DaysForcast"] as JSON
+                
                 for(var i=1; i<6; i++) {
                     var weather = Weather(weatherImage: jsonArray[i, "weather", "main"].stringValue,
+                        
                         day: jsonArray[i, "day"].stringValue,
                         minTemperature: jsonArray[i, "temperature", "min"].stringValue,
                         maxTemperature: jsonArray[i, "temperature", "max"].stringValue)
@@ -66,13 +89,6 @@ class WeatherViewController: UIViewController {
                 self.createBottomViews()
             }
         })
-    }
-    
-    @IBAction func refreshWeatherForcast(sender: AnyObject) {
-        request(.GET, "http://fire-weather.herokuapp.com/api/v1/")
-        .responseJSON{(request, response, data, error) in
-            println(data)
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -99,6 +115,7 @@ class WeatherViewController: UIViewController {
         }
     }
     
+    // Create views for subsequent days and assign component values
     func createBottomViews() {
         for(var count:CGFloat = 0; count<5; count++) {
             var viewHeight:CGFloat = self.containerView.frame.size.height / 5
@@ -160,6 +177,57 @@ class WeatherViewController: UIViewController {
             bottomView.addConstraint(imageViewContraintHeight)
             bottomView.addConstraint(imageViewConstraintWidth)
         }
+    }
+    
+    func createDropDown() {
+        dropDownView = UITableView()
+        dropDownView.delegate = self
+        dropDownView.dataSource = self
+        var navBarHeight: CGFloat = self.navigationController!.navigationBar.frame.size.height
+        var statusBarHeight = UIApplication.sharedApplication().statusBarFrame.height
+        dropDownView.frame = CGRectMake(0, self.view.frame.origin.y + navBarHeight + statusBarHeight, self.view.frame.size.width, self.view.frame.height / 2.85)
+        dropDownView.backgroundColor = UIColor.darkGrayColor()
+        dropDownView.tableFooterView = UIView(frame: CGRectZero)
+        dropDownView.rowHeight = 40
+        dropDownView.separatorColor = UIColor.clearColor()
+        dropDownView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(dropDownView)
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let num = cities?.allKeys.count as Int?{
+            return num
+        }else {
+            return 0
+        }
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! UITableViewCell
+        let city: AnyObject = cities.allKeys[indexPath.row]
+        cell.textLabel!.text = city as? String
+        cell.textLabel?.textColor = UIColor.whiteColor()
+        cell.textLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: CGFloat(17))
+        cell.backgroundColor = UIColor.grayColor()
+        cell.selectionStyle = .None
+        return cell
+    }
+    
+    @IBAction func showCities() {
+        dropDownView.hidden = !dropDownView.hidden
+    }
+    
+    func toggleDropDownView() -> Bool {
+        return dropDownView.hidden
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        selectedCity = cell!.textLabel!.text!
+        dropDownView.hidden = !toggleDropDownView()
+        forecast()
+        changeSelectedCity.titleLabel!.text = selectedCity
+        println(selectedCity)
     }
 
 }
