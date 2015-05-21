@@ -12,7 +12,7 @@ import SwiftyJSON
 
 class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var rootRef = Firebase(url:"https://fireweather.firebaseio.com/")
+    let rootRef: Firebase = Firebase(url:"https://fireweather.firebaseio.com/")
     
     @IBOutlet weak var firstView: UIView!
     @IBOutlet weak var containerView: UIView!
@@ -20,8 +20,9 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     var weatherArray = [Weather]()
     var cities: NSDictionary!
     var selectedCity: String = "calabar,ng"
+    var showTable: Bool!
   
-    @IBOutlet weak var changeSelectedCity: UIButton!
+    //@IBOutlet weak var changeSelectedCity: UIButton!
     
     @IBOutlet weak var weatherType: UILabel!
     @IBOutlet weak var temperature: UILabel!
@@ -36,7 +37,7 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         // Do any additional setup after loading the view.
         refreshWeatherForcast(self)
         createDropDown()
-        dropDownView.hidden = !toggleDropDownView()
+        showTable = false
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -65,10 +66,11 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.temperature.text = String(Int(round(temp!))) + "\u{00B0}"
                 self.weatherImage.image = UIImage(named: json["cities", self.selectedCity, "dailyForcast", "weather", 0, "main"].stringValue)
                 self.humidity.text = json["cities", self.selectedCity, "dailyForcast", "main", "humidity"].stringValue + "%"
-                if let rain = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue as String?{
-                    self.rainfall.text = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue + "mm"
-                } else {
+                let rain = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue as String?
+                if rain!.isEmpty {
                     self.rainfall.text = "0mm"
+                }else {
+                    self.rainfall.text = json["cities", self.selectedCity, "dailyForcast", "rain", "3h"].stringValue + "mm"
                 }
                 self.windSpeed.text = json["cities", self.selectedCity, "dailyForcast", "wind", "speed"].stringValue + "mph"
                 self.setBackgroundColor(self.firstView, temperature: String(Int(round(json["cities", self.selectedCity, "dailyForcast", "main", "temp_min"].double!))))
@@ -77,13 +79,12 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.whiteColor()]
                 
                 var jsonArray = json["cities", self.selectedCity, "5DaysForcast"] as JSON
-                
+                self.weatherArray = []
                 for(var i=1; i<6; i++) {
                     var weather = Weather(weatherImage: jsonArray[i, "weather", "main"].stringValue,
-                        
-                        day: jsonArray[i, "day"].stringValue,
-                        minTemperature: jsonArray[i, "temperature", "min"].stringValue,
-                        maxTemperature: jsonArray[i, "temperature", "max"].stringValue)
+                                        day: jsonArray[i, "day"].stringValue,
+                                        minTemperature: jsonArray[i, "temperature", "min"].stringValue,
+                                        maxTemperature: jsonArray[i, "temperature", "max"].stringValue)
                     self.weatherArray.append(weather)
                 }
                 self.createBottomViews()
@@ -115,6 +116,13 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    // set bottom view text properties
+    func setBottomViewLabel(label: UILabel, text: String, textColor: UIColor, fontName: String, fontSize: Int) {
+        label.text = text
+        label.textColor = textColor
+        label.font = UIFont(name: fontName, size: CGFloat(fontSize))
+    }
+    
     // Create views for subsequent days and assign component values
     func createBottomViews() {
         for(var count:CGFloat = 0; count<5; count++) {
@@ -130,18 +138,9 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
             let imageView: UIImageView = UIImageView()
             
             imageView.image = UIImage(named: weatherArray[Int(count)].weatherImage)
-            
-            dayLabel.text = weatherArray[Int(count)].day
-            dayLabel.textColor = UIColor.whiteColor()
-            dayLabel.font = UIFont(name: "AvenirNext-DemiBold", size: CGFloat(17))
-            
-            minTempLabel.text = weatherArray[Int(count)].minTemperature + "\u{00B0}"
-            minTempLabel.textColor = UIColor.whiteColor()
-            minTempLabel.font = UIFont(name: "AvenirNext-DemiBold", size: CGFloat(14))
-            
-            maxTempLabel.text = " / " + weatherArray[Int(count)].maxTemperature + "\u{00B0}"
-            maxTempLabel.textColor = UIColor.whiteColor()
-            maxTempLabel.font = UIFont(name: "AvenirNext-DemiBold", size: CGFloat(17))
+            setBottomViewLabel(dayLabel, text: (weatherArray[Int(count)].day), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 17)
+            setBottomViewLabel(minTempLabel, text: (weatherArray[Int(count)].minTemperature + "\u{00B0}"), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 14)
+            setBottomViewLabel(maxTempLabel, text: (" / " + weatherArray[Int(count)].maxTemperature + "\u{00B0}"), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 17)
             
             dayLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
             minTempLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
@@ -179,21 +178,16 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    // Create drop down table view
     func createDropDown() {
         dropDownView = UITableView()
-        dropDownView.delegate = self
-        dropDownView.dataSource = self
-        var navBarHeight: CGFloat = self.navigationController!.navigationBar.frame.size.height
-        var statusBarHeight = UIApplication.sharedApplication().statusBarFrame.height
-        dropDownView.frame = CGRectMake(0, self.view.frame.origin.y + navBarHeight + statusBarHeight, self.view.frame.size.width, self.view.frame.height / 2.85)
-        dropDownView.backgroundColor = UIColor.darkGrayColor()
-        dropDownView.tableFooterView = UIView(frame: CGRectZero)
-        dropDownView.rowHeight = 40
-        dropDownView.separatorColor = UIColor.clearColor()
-        dropDownView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        setUITableViewDelegateAndDataSource(dropDownView)
+        dropDownView.frame = CGRectMake(0, -getDropDownViewYPosition(), self.view.frame.size.width, getDropDownViewHeight())
+        configureUITableView(dropDownView)
         self.view.addSubview(dropDownView)
     }
     
+    // Return number of rows in the tableview
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let num = cities?.allKeys.count as Int?{
             return num
@@ -205,29 +199,90 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! UITableViewCell
         let city: AnyObject = cities.allKeys[indexPath.row]
-        cell.textLabel!.text = city as? String
-        cell.textLabel?.textColor = UIColor.whiteColor()
-        cell.textLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: CGFloat(17))
-        cell.backgroundColor = UIColor.grayColor()
-        cell.selectionStyle = .None
+        configureUITableViewCell(cell, text: (city as? String)!, textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 17, cellBackgroundColor: UIColor.grayColor(), cellSelectionStyle: UITableViewCellSelectionStyle.None)
         return cell
     }
     
-    @IBAction func showCities() {
-        dropDownView.hidden = !dropDownView.hidden
+    // configure tableview cell
+    func configureUITableViewCell(cell: UITableViewCell, text: String, textColor: UIColor, fontName: String, fontSize: Int, cellBackgroundColor: UIColor, cellSelectionStyle: UITableViewCellSelectionStyle) {
+        cell.backgroundColor = cellBackgroundColor
+        cell.selectionStyle = cellSelectionStyle
+        setUITableViewCellTextLabel(cell, text: text, textColor: textColor, fontName: fontName, fontSize: fontSize)
     }
     
-    func toggleDropDownView() -> Bool {
-        return dropDownView.hidden
+    
+    // set tableview cell properties
+    func setUITableViewCellTextLabel(cell: UITableViewCell, text: String, textColor: UIColor, fontName: String, fontSize: Int) {
+        cell.textLabel!.text = text
+        cell.textLabel?.textColor = textColor
+        cell.textLabel?.font = UIFont(name: fontName, size: CGFloat(fontSize))
+    }
+    
+    // configure tableview properties
+    func configureUITableView(table: UITableView) {
+        setUITableViewRowHeightAndFooter(table, rowHeight: 40)
+        setUITableViewUIColors(dropDownView, backgroundColor: UIColor.darkGrayColor(), separatorColor: UIColor.clearColor())
+        table.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    // set tableview row height and table footer
+    func setUITableViewRowHeightAndFooter(table: UITableView, rowHeight: CGFloat) {
+        table.rowHeight = rowHeight
+        table.tableFooterView = UIView(frame: CGRectZero)
+    }
+    
+    // set tableView background color ans separator color
+    func setUITableViewUIColors(table: UITableView, backgroundColor: UIColor, separatorColor: UIColor) {
+        table.backgroundColor = backgroundColor
+        table.separatorColor = separatorColor
+    }
+    
+    // set tableview delegate and datasource
+    func setUITableViewDelegateAndDataSource(table: UITableView) {
+        table.delegate = self
+        table.dataSource = self
+    }
+    
+    // get navigation bar heigth
+    func getNavBarHeight() -> CGFloat {
+        return self.navigationController!.navigationBar.frame.size.height
+    }
+    
+    // get status bar heigth
+    func getStatusBarHeight() -> CGFloat {
+        return UIApplication.sharedApplication().statusBarFrame.height
+    }
+    
+    // get height of dropdown tableview
+    func getDropDownViewHeight() -> CGFloat {
+        return self.view.frame.height / 2.85
+    }
+    
+    // get the Y position of dropdown tableview
+    func getDropDownViewYPosition() -> CGFloat {
+        return self.view.frame.height / 2.85 + getNavBarHeight() + getStatusBarHeight()
+    }
+    
+    // show or hide dropdown tableview with slidein / slideout animation
+    @IBAction func toggleDropDownView() {
+        if showTable == true {
+            UIView.animateWithDuration(0.5, animations: {
+                self.dropDownView.frame = CGRectMake(0, -self.getDropDownViewYPosition(), self.view.frame.size.width, self.getDropDownViewHeight())
+            })
+            showTable = false
+        }else {
+            UIView.animateWithDuration(0.5, animations: {
+                self.dropDownView.frame = CGRectMake(0, self.getNavBarHeight() + self.getStatusBarHeight(), self.view.frame.size.width, self.getDropDownViewHeight())
+            })
+            showTable = true
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         selectedCity = cell!.textLabel!.text!
-        dropDownView.hidden = !toggleDropDownView()
         forecast()
-        changeSelectedCity.titleLabel!.text = selectedCity
-        println(selectedCity)
+        toggleDropDownView()
     }
 
 }

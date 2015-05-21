@@ -179,19 +179,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wPH-lP-W3H">
-                        <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings" id="gti-Q7-Oyv"/>
-                        <button key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="OVb-oc-uEw">
-                            <rect key="frame" x="58" y="7" width="491" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="17"/>
-                            <state key="normal" title="Calabar">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
+                        <barButtonItem key="leftBarButtonItem" image="down" id="gti-Q7-Oyv">
                             <connections>
-                                <action selector="showCities" destination="Mzm-6L-vY5" eventType="touchUpInside" id="8q9-Yi-cnI"/>
+                                <action selector="toggleDropDownView" destination="Mzm-6L-vY5" id="Myi-1B-zZD"/>
                             </connections>
-                        </button>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="gAX-or-kUT">
                             <connections>
                                 <action selector="refreshWeatherForcast:" destination="Mzm-6L-vY5" id="VLl-Pe-sCr"/>
@@ -199,7 +191,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="changeSelectedCity" destination="OVb-oc-uEw" id="hLA-mk-Dnq"/>
                         <outlet property="containerView" destination="jcJ-pB-DrG" id="C4c-Jx-7b9"/>
                         <outlet property="firstView" destination="t4I-d7-isI" id="SMR-Ab-xGJ"/>
                         <outlet property="humidity" destination="9Rh-JL-RMu" id="TQr-4W-u6q"/>
@@ -236,8 +227,8 @@
     </scenes>
     <resources>
         <image name="air_element" width="25" height="25"/>
+        <image name="down" width="25" height="25"/>
         <image name="humidity" width="25" height="25"/>
-        <image name="settings" width="25" height="25"/>
         <image name="smallrain" width="25" height="25"/>
         <image name="wind_turbine" width="25" height="25"/>
     </resources>
