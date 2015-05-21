@@ -7,7 +7,7 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
-        <!--Lagos-->
+        <!--Weather View Controller-->
         <scene sceneID="TGV-ui-fDG">
             <objects>
                 <viewController id="Mzm-6L-vY5" customClass="WeatherViewController" customModule="FireWeather" customModuleProvider="target" sceneMemberID="viewController">
@@ -178,8 +178,12 @@
                             <constraint firstAttribute="trailingMargin" secondItem="t4I-d7-isI" secondAttribute="trailing" constant="-16" id="ouh-7e-rcc"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Lagos" id="wPH-lP-W3H">
-                        <barButtonItem key="leftBarButtonItem" image="settings" id="gti-Q7-Oyv"/>
+                    <navigationItem key="navigationItem" id="wPH-lP-W3H">
+                        <barButtonItem key="leftBarButtonItem" image="down" id="gti-Q7-Oyv">
+                            <connections>
+                                <action selector="toggleDropDownView" destination="Mzm-6L-vY5" id="Myi-1B-zZD"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="gAX-or-kUT">
                             <connections>
                                 <action selector="refreshWeatherForcast:" destination="Mzm-6L-vY5" id="VLl-Pe-sCr"/>
@@ -205,7 +209,6 @@
         <!--Navigation Controller-->
         <scene sceneID="QYP-ac-0rN">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="t16-2x-XGT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Crx-2X-Gcw" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="OPv-U2-B4A">
@@ -217,14 +220,15 @@
                         <segue destination="Mzm-6L-vY5" kind="relationship" relationship="rootViewController" id="dFQ-Re-j1Y"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t16-2x-XGT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2411" y="422"/>
         </scene>
     </scenes>
     <resources>
         <image name="air_element" width="25" height="25"/>
+        <image name="down" width="25" height="25"/>
         <image name="humidity" width="25" height="25"/>
-        <image name="settings" width="25" height="25"/>
         <image name="smallrain" width="25" height="25"/>
         <image name="wind_turbine" width="25" height="25"/>
     </resources>
