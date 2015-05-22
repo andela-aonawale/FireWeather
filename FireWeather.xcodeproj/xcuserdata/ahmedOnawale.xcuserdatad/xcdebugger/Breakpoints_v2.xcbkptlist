@@ -20,13 +20,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireWeather/WeatherViewController.swift"
-            timestampString = "453916223.762614"
+            timestampString = "454004735.996048"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "190"
-            endingLineNumber = "190"
-            landmarkName = "tableView(_:numberOfRowsInSection:)"
-            landmarkType = "5">
+            startingLineNumber = "224"
+            endingLineNumber = "224"
+            landmarkName = "WeatherViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -36,13 +36,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireWeather/WeatherViewController.swift"
-            timestampString = "453916223.762614"
+            timestampString = "454004735.996048"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "206"
-            endingLineNumber = "206"
-            landmarkName = "configureUITableViewCell(_:text:textColor:fontName:fontSize:cellBackgroundColor:cellSelectionStyle:)"
-            landmarkType = "5">
+            startingLineNumber = "240"
+            endingLineNumber = "240"
+            landmarkName = "WeatherViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

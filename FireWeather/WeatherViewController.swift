@@ -14,30 +14,27 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     let rootRef: Firebase = Firebase(url:"https://fireweather.firebaseio.com/")
     
-    @IBOutlet weak var firstView: UIView!
-    @IBOutlet weak var containerView: UIView!
     var dropDownView: UITableView!
-    var weatherArray = [Weather]()
     var cities: NSDictionary!
+    var weatherArray = [Weather]()
+    var showTable: Bool = false
     var selectedCity: String = "calabar,ng"
-    var showTable: Bool!
-  
-    //@IBOutlet weak var changeSelectedCity: UIButton!
     
     @IBOutlet weak var weatherType: UILabel!
     @IBOutlet weak var temperature: UILabel!
-    @IBOutlet weak var weatherImage: UIImageView!
     @IBOutlet weak var humidity: UILabel!
     @IBOutlet weak var rainfall: UILabel!
     @IBOutlet weak var windSpeed: UILabel!
     @IBOutlet weak var windDirection: UILabel!
+    @IBOutlet weak var weatherImage: UIImageView!
+    @IBOutlet weak var firstView: UIView!
+    @IBOutlet weak var containerView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         refreshWeatherForcast(self)
         createDropDown()
-        showTable = false
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -49,8 +46,14 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBAction func refreshWeatherForcast(sender: AnyObject) {
         request(.GET, "http://fire-weather.herokuapp.com/api/v1/")
         .responseJSON{(request, response, data, error) in
-            println(data)
         }
+    }
+    
+    // set navigation bar background and text color
+    func setNavigationBarProperties() {
+        self.navigationController?.navigationBar.barTintColor = firstView.backgroundColor
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.whiteColor()]
     }
     
     func forecast() {
@@ -74,17 +77,12 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 self.windSpeed.text = json["cities", self.selectedCity, "dailyForcast", "wind", "speed"].stringValue + "mph"
                 self.setBackgroundColor(self.firstView, temperature: String(Int(round(json["cities", self.selectedCity, "dailyForcast", "main", "temp_min"].double!))))
-                self.navigationController?.navigationBar.barTintColor = self.firstView.backgroundColor
-                self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-                self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName:UIColor.whiteColor()]
+                self.setNavigationBarProperties()
                 
                 var jsonArray = json["cities", self.selectedCity, "5DaysForcast"] as JSON
                 self.weatherArray = []
                 for(var i=1; i<6; i++) {
-                    var weather = Weather(weatherImage: jsonArray[i, "weather", "main"].stringValue,
-                                        day: jsonArray[i, "day"].stringValue,
-                                        minTemperature: jsonArray[i, "temperature", "min"].stringValue,
-                                        maxTemperature: jsonArray[i, "temperature", "max"].stringValue)
+                    var weather = Weather(weatherImage: jsonArray[i, "weather", "main"].stringValue, day: jsonArray[i, "day"].stringValue, minTemperature: jsonArray[i, "temperature", "min"].stringValue, maxTemperature: jsonArray[i, "temperature", "max"].stringValue)
                     self.weatherArray.append(weather)
                 }
                 self.createBottomViews()
@@ -100,11 +98,11 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     func setBackgroundColor(myview: UIView, temperature: String) {
         var temp: Int = temperature.toInt()!
         if(temp < 18) {
-            myview.backgroundColor = UIColor(red: 0/255.0, green: 102/255.0, blue: 102/255.0, alpha: 1.0)
-        }else if(temp < 23 && temp >= 18) {
-            myview.backgroundColor = UIColor(red: 0/255.0, green: 102/255.0, blue: 0/255.0, alpha: 1.0)
-        }else if(temp < 28 && temp >= 23) {
-            myview.backgroundColor = UIColor(red: 71/255.0, green: 147/255.0, blue: 71/255.0, alpha: 1.0)
+            myview.backgroundColor = UIColor(red: 0/255.0, green: 51/255.0, blue: 102/255.0, alpha: 1.0)
+        }else if(temp < 24 && temp >= 18) {
+            myview.backgroundColor = UIColor(red: 25/255.0, green: 71/255.0, blue: 117/255.0, alpha: 1.0)
+        }else if(temp < 28 && temp >= 24) {
+            myview.backgroundColor = UIColor(red: 0/255.0, green: 102/255.0, blue: 153/255.0, alpha: 1.0)
         }else if(temp < 33 && temp >= 28) {
             myview.backgroundColor = UIColor(red: 255/255.0, green: 173/255.0, blue: 92/255.0, alpha: 1.0)
         }else if(temp < 38 && temp >= 33) {
@@ -123,58 +121,94 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         label.font = UIFont(name: fontName, size: CGFloat(fontSize))
     }
     
+    // set constrainst for labels X and Y position
+    func setLayoutConstraint(bottomView: UIView, item: UILabel, attrX: NSLayoutAttribute, relatedBy: NSLayoutRelation, toItemX: UIView, attributeX: NSLayoutAttribute, multiplierX: CGFloat, constantX: CGFloat, attrY: NSLayoutAttribute, toItemY: UIView, attributeY: NSLayoutAttribute, multiplierY: CGFloat, constantY: CGFloat){
+        bottomView.addConstraint(NSLayoutConstraint(item: item, attribute: attrX, relatedBy: relatedBy, toItem: toItemX, attribute: attributeX, multiplier: multiplierX, constant: constantX))
+        bottomView.addConstraint(NSLayoutConstraint(item: item, attribute: attrY, relatedBy: relatedBy, toItem: toItemY, attribute: attributeY, multiplier: multiplierY, constant: constantY))
+    }
+    
+    // set constrainst for imageView Y position and heigth
+    func setLayoutConstraint(bottomView: UIView, image: UIImageView, attrY: NSLayoutAttribute, relatedBy: NSLayoutRelation, toItemY: UIView, attributeY: NSLayoutAttribute, multiplierY: CGFloat, constantY: CGFloat, attrHeight: NSLayoutAttribute, toItemHeight: UIView, attributeHeight: NSLayoutAttribute, multiplierHeight: CGFloat, constantHeight: CGFloat){
+        bottomView.addConstraint(NSLayoutConstraint(item: image, attribute: attrY, relatedBy: relatedBy, toItem: toItemY, attribute: attributeY, multiplier: multiplierY, constant: constantY))
+        bottomView.addConstraint(NSLayoutConstraint(item: image, attribute: attrHeight, relatedBy: relatedBy, toItem: toItemHeight, attribute: attributeHeight, multiplier: multiplierHeight, constant: constantHeight))
+    }
+    
+    // set constrainst for imageView X position and width
+    func setLayoutConstraint(bottomView: UIView, image: UIImageView, attrX: NSLayoutAttribute, relatedBy: NSLayoutRelation, toItemX: UILabel, attributeX: NSLayoutAttribute, multiplierX: CGFloat, constantX: CGFloat, attrWidth: NSLayoutAttribute, attributeWidth: NSLayoutAttribute, multiplierWidth: CGFloat, constantWidth: CGFloat){
+        bottomView.addConstraint(NSLayoutConstraint(item: image, attribute: attrX, relatedBy: relatedBy, toItem: toItemX, attribute: attributeX, multiplier: multiplierX, constant: constantX))
+        bottomView.addConstraint(NSLayoutConstraint(item: image, attribute: attrWidth, relatedBy: relatedBy, toItem: image, attribute: attributeWidth, multiplier: multiplierWidth, constant: constantWidth))
+    }
+    
+    // set components TranslatesAutoresizingMaskIntoConstraints
+    func setTranslatesAutoresizingMaskIntoConstraints(dayLabel: UILabel, minTempLabel: UILabel, maxTempLabel: UILabel, imageView: UIImageView) {
+        dayLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        minTempLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        maxTempLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+        imageView.setTranslatesAutoresizingMaskIntoConstraints(false)
+    }
+    
+    // add bottom view components
+    func addSubView(bottomView: UIView, dayLabel: UILabel, minTempLabel: UILabel, maxTempLabel: UILabel, imageView: UIImageView) {
+        bottomView.addSubview(dayLabel)
+        bottomView.addSubview(minTempLabel)
+        bottomView.addSubview(maxTempLabel)
+        bottomView.addSubview(imageView)
+    }
+    
+    // get bottom view height
+    func getBottomViewHeight() -> CGFloat {
+        return containerView.frame.size.height / 5
+    }
+    
+    // get container view width
+    func getContainerViewWidth() -> CGFloat {
+        return containerView.frame.size.width
+    }
+    
+    // get container view Y position
+    func getContainerViewYPosition() -> CGFloat {
+        return containerView.frame.origin.y
+    }
+    
     // Create views for subsequent days and assign component values
     func createBottomViews() {
         for(var count:CGFloat = 0; count<5; count++) {
-            var viewHeight:CGFloat = self.containerView.frame.size.height / 5
-            let bottomView: UIView = UIView()
-            bottomView.frame = CGRectMake(0, self.containerView.frame.origin.y + count * viewHeight, self.containerView.frame.size.width, self.containerView.frame.size.height / 5)
-            setBackgroundColor(bottomView, temperature: weatherArray[Int(count)].minTemperature)
-            self.view.addSubview(bottomView)
-            
             let dayLabel: UILabel = UILabel()
             let minTempLabel: UILabel = UILabel()
             let maxTempLabel: UILabel = UILabel()
             let imageView: UIImageView = UIImageView()
+            let bottomView: UIView = UIView()
+            
+            bottomView.frame = CGRectMake(0, getContainerViewYPosition() + count * getBottomViewHeight(), getContainerViewWidth(), getBottomViewHeight())
+            setBackgroundColor(bottomView, temperature: weatherArray[Int(count)].minTemperature)
+            
+            self.view.addSubview(bottomView)
             
             imageView.image = UIImage(named: weatherArray[Int(count)].weatherImage)
             setBottomViewLabel(dayLabel, text: (weatherArray[Int(count)].day), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 17)
             setBottomViewLabel(minTempLabel, text: (weatherArray[Int(count)].minTemperature + "\u{00B0}"), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 14)
             setBottomViewLabel(maxTempLabel, text: (" / " + weatherArray[Int(count)].maxTemperature + "\u{00B0}"), textColor: UIColor.whiteColor(), fontName: "AvenirNext-DemiBold", fontSize: 17)
             
-            dayLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-            minTempLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-            maxTempLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-            imageView.setTranslatesAutoresizingMaskIntoConstraints(false)
+            // set TranslatesAutoresizingMaskIntoConstraints
+            setTranslatesAutoresizingMaskIntoConstraints(dayLabel, minTempLabel: minTempLabel, maxTempLabel: maxTempLabel, imageView: imageView)
             
-            bottomView.addSubview(dayLabel)
-            bottomView.addSubview(minTempLabel)
-            bottomView.addSubview(maxTempLabel)
-            bottomView.addSubview(imageView)
-
-            var dayLabelConstraintX = NSLayoutConstraint(item: dayLabel, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.Leading, multiplier: 1, constant: 8)
-            var dayLabelConstraintY = NSLayoutConstraint(item: dayLabel, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0)
-            bottomView.addConstraint(dayLabelConstraintX)
-            bottomView.addConstraint(dayLabelConstraintY)
+            // add sub views
+            addSubView(bottomView, dayLabel: dayLabel, minTempLabel: minTempLabel, maxTempLabel: maxTempLabel, imageView: imageView)
             
-            var maxTempLabelConstraintX = NSLayoutConstraint(item: maxTempLabel, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.Trailing, multiplier: 1, constant: -10)
-            var maxTempLabelConstraintY = NSLayoutConstraint(item: maxTempLabel, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0)
-            bottomView.addConstraint(maxTempLabelConstraintX)
-            bottomView.addConstraint(maxTempLabelConstraintY)
+            // set laout constraint for dayLabel
+            setLayoutConstraint(bottomView, item: dayLabel, attrX: .Leading, relatedBy: .Equal, toItemX: bottomView, attributeX: .Leading, multiplierX: 1, constantX: 8, attrY: .CenterY, toItemY: bottomView, attributeY: .CenterY, multiplierY: 1, constantY: 0)
             
-            var minTempLabelConstraintX = NSLayoutConstraint(item: minTempLabel, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: maxTempLabel, attribute: NSLayoutAttribute.Leading, multiplier: 1, constant: 0)
-            var minTempLabelConstraintY = NSLayoutConstraint(item: minTempLabel, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0)
-            bottomView.addConstraint(minTempLabelConstraintX)
-            bottomView.addConstraint(minTempLabelConstraintY)
+            // set layout constraint for maxTempLabel
+            setLayoutConstraint(bottomView, item: maxTempLabel, attrX: .Trailing, relatedBy: .Equal, toItemX: bottomView, attributeX: .Trailing, multiplierX: 1, constantX: -10, attrY: .CenterY, toItemY: bottomView, attributeY: .CenterY, multiplierY: 1, constantY: 0)
             
-            var imageViewConstraintX = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: minTempLabel, attribute: NSLayoutAttribute.Leading, multiplier: 1, constant: -10)
-            var imageViewConstraintY = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0)
-            var imageViewContraintHeight = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: bottomView, attribute: NSLayoutAttribute.Height, multiplier: 0.75, constant: 0)
-            var imageViewConstraintWidth = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: imageView, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0)
-            bottomView.addConstraint(imageViewConstraintX)
-            bottomView.addConstraint(imageViewConstraintY)
-            bottomView.addConstraint(imageViewContraintHeight)
-            bottomView.addConstraint(imageViewConstraintWidth)
+            // set layout constraint for minTempLabel
+            setLayoutConstraint(bottomView, item: minTempLabel, attrX: .Trailing, relatedBy: .Equal, toItemX: maxTempLabel, attributeX: .Leading, multiplierX: 1, constantX: 0, attrY: .CenterY, toItemY: bottomView, attributeY: .CenterY, multiplierY: 1, constantY: 0)
+            
+            // set layout constraint for imageView Y position and Height constraints
+            setLayoutConstraint(bottomView, image: imageView, attrY: .CenterY, relatedBy: .Equal, toItemY: bottomView, attributeY: .CenterY, multiplierY: 1, constantY: 0, attrHeight: .Height, toItemHeight: bottomView, attributeHeight: .Height, multiplierHeight: 0.75, constantHeight: 0)
+            
+            // set layout constraint for imageView X position and Width constraints
+            setLayoutConstraint(bottomView, image: imageView, attrX: .Trailing, relatedBy: .Equal, toItemX: minTempLabel, attributeX: .Leading, multiplierX: 1, constantX: -10, attrWidth: .Width, attributeWidth: .Height, multiplierWidth: 1, constantWidth: 0)
         }
     }
     
@@ -189,8 +223,8 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     // Return number of rows in the tableview
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let num = cities?.allKeys.count as Int?{
-            return num
+        if let numberOfCities = cities?.allKeys.count as Int?{
+            return numberOfCities
         }else {
             return 0
         }
@@ -255,7 +289,7 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     // get height of dropdown tableview
     func getDropDownViewHeight() -> CGFloat {
-        return self.view.frame.height / 2.85
+        return getParentViewHeight() / 2.85
     }
     
     // get the Y position of dropdown tableview
@@ -263,19 +297,46 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         return self.view.frame.height / 2.85 + getNavBarHeight() + getStatusBarHeight()
     }
     
+    
+    // get dropdown tableview position when hidden
+    func getDropDownViewHiddenPosition() -> CGRect {
+        return CGRectMake(0, -getDropDownViewYPosition(), getParentViewWidth(), getDropDownViewHeight())
+    }
+    
+    // get dropdown tableview position when displayed
+    func getDropDownViewDisplayedPosition() -> CGRect {
+        return CGRectMake(0, getNavBarHeight() + getStatusBarHeight(), getParentViewWidth(), getDropDownViewHeight())
+    }
+    
+    // get parent view width
+    func getParentViewWidth() -> CGFloat {
+        return self.view.frame.size.width
+    }
+    
+    // get parent view height
+    func getParentViewHeight() -> CGFloat {
+        return self.view.frame.size.height
+    }
+    
+    //hide dropdown tableview
+    func hideDropDownView() {
+        UIView.animateWithDuration(0.5, animations: {
+            self.dropDownView.frame = self.getDropDownViewHiddenPosition()
+            self.showTable = !self.showTable
+        })
+    }
+    
+    // show dropdown tableview
+    func showDropDownView() {
+        UIView.animateWithDuration(0.5, animations: {
+            self.dropDownView.frame = self.getDropDownViewDisplayedPosition()
+            self.showTable = !self.showTable
+        })
+    }
+    
     // show or hide dropdown tableview with slidein / slideout animation
     @IBAction func toggleDropDownView() {
-        if showTable == true {
-            UIView.animateWithDuration(0.5, animations: {
-                self.dropDownView.frame = CGRectMake(0, -self.getDropDownViewYPosition(), self.view.frame.size.width, self.getDropDownViewHeight())
-            })
-            showTable = false
-        }else {
-            UIView.animateWithDuration(0.5, animations: {
-                self.dropDownView.frame = CGRectMake(0, self.getNavBarHeight() + self.getStatusBarHeight(), self.view.frame.size.width, self.getDropDownViewHeight())
-            })
-            showTable = true
-        }
+        showTable == true ? hideDropDownView() : showDropDownView()
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
